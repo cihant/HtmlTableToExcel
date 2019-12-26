@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Cihan Topcu</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/cihant/HtmlTableToExcel</PackageProjectUrl>
+    <PackageTags>excel, html, convert</PackageTags>
+    <PackageId>HtmlTableToExcel</PackageId>
+    <RepositoryUrl>https://github.com/cihant/HtmlTableToExcel</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.13.0" />
+    <PackageReference Include="AngleSharp.Css" Version="0.13.0" />
+    <PackageReference Include="EPPlus" Version="4.5.3.2" />
+  </ItemGroup>
+
+</Project>
