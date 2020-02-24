@@ -14,12 +14,14 @@ namespace HtmlTableToExcel
 {
     public class HtmlTableToExcel
     {
-        const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";//matches one or more (white space or line breaks) between '>' and '<'
+        const string tagWhiteSpace = @"(>|$)(\s|\n|\r)+<";//matches one or more (white space or line breaks) between '>' and '<'
         const string stripFormatting = @"<[^>]*(>|$)";//match any character between '<' and '>', even when end tag is missing
-        const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";//matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+        const string lineBreak = @"<(br|BR)[^>]*(>|$)";//matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+        const string stripSpaceAfterLineBreak = @"[\n|\r]{1}[ ]+"; // matches "\n              Text"
 
         readonly Regex lineBreakRegex = new Regex(lineBreak, RegexOptions.Multiline);
         readonly Regex stripFormattingRegex = new Regex(stripFormatting, RegexOptions.Multiline);
+        readonly Regex stripSpaceAfterLineBreakRegex = new Regex(stripSpaceAfterLineBreak, RegexOptions.Multiline);
         readonly Regex tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.Multiline);
 
         readonly ExcelPackage excel = new ExcelPackage();
@@ -28,7 +30,7 @@ namespace HtmlTableToExcel
         readonly bool useCssStyles = false;
         readonly IHtmlTableParser htmlTableParser;
 
-        public HtmlTableToExcel(IHtmlTableParser parser=null, string sheetName = "sheet1", eOrientation orientation = eOrientation.Portrait)
+        public HtmlTableToExcel(IHtmlTableParser parser = null, string sheetName = "sheet1", eOrientation orientation = eOrientation.Portrait)
         {
             sheet = excel.Workbook.Worksheets.Add(sheetName);
             sheet.Cells.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
@@ -173,6 +175,11 @@ namespace HtmlTableToExcel
                     PropertyToStyle(range, sa.Key, sa.Value);
                 }
             }
+
+            if (range.Text.Contains('\r') || range.Text.Contains('\n'))
+            {
+                range.Style.WrapText = true;
+            }
         }
         private void PropertyToStyle(ExcelRange range, string cssProperty, string cssPropertyValue)
         {
@@ -236,6 +243,8 @@ namespace HtmlTableToExcel
             html = System.Net.WebUtility.HtmlDecode(html);
             //Remove tag whitespace/line breaks
             html = tagWhiteSpaceRegex.Replace(html, "><");
+            //Remove whitespace after line breaks
+            html = stripSpaceAfterLineBreakRegex.Replace(html, Environment.NewLine);
             //Replace <br /> with line breaks
             html = lineBreakRegex.Replace(html, Environment.NewLine);
             //Strip formatting
