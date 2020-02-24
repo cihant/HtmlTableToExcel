@@ -9,6 +9,7 @@
     <PackageTags>excel, html, convert</PackageTags>
     <PackageId>HtmlTableToExcel</PackageId>
     <RepositoryUrl>https://github.com/cihant/HtmlTableToExcel</RepositoryUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
